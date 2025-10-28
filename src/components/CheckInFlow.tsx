@@ -11,6 +11,7 @@ import { CompanionsScreen } from "./checkin/CompanionsScreen";
 import { StayDetailsScreen } from "./checkin/StayDetailsScreen";
 import { AdditionalInfoScreen } from "./checkin/AdditionalInfoScreen";
 import { FinalizationScreen } from "./checkin/FinalizationScreen";
+import { ThankYouScreen } from "./checkin/ThankYouScreen";
 import { CheckInProgress } from "./checkin/CheckInProgress";
 
 export type CheckInStep = 
@@ -25,7 +26,8 @@ export type CheckInStep =
   | 'companions'
   | 'stay-details'
   | 'additional-info'
-  | 'finalization';
+  | 'finalization'
+  | 'thank-you';
 
 export interface GuestData {
   bookingCode?: string;
@@ -79,6 +81,10 @@ export const CheckInFlow = () => {
     setGuestData(prev => ({ ...prev, ...data }));
   };
 
+  const goToStep = (step: CheckInStep) => {
+    setCurrentStep(step);
+  };
+
   const goToNextStep = () => {
     const steps: CheckInStep[] = [
       'welcome',
@@ -92,7 +98,8 @@ export const CheckInFlow = () => {
       'companions',
       'stay-details',
       'additional-info',
-      'finalization'
+      'finalization',
+      'thank-you'
     ];
     
     const currentIndex = steps.indexOf(currentStep);
@@ -114,7 +121,8 @@ export const CheckInFlow = () => {
       'companions',
       'stay-details',
       'additional-info',
-      'finalization'
+      'finalization',
+      'thank-you'
     ];
     
     const currentIndex = steps.indexOf(currentStep);
@@ -148,7 +156,9 @@ export const CheckInFlow = () => {
       case 'additional-info':
         return <AdditionalInfoScreen onNext={goToNextStep} onBack={goToPreviousStep} data={guestData} updateData={updateGuestData} />;
       case 'finalization':
-        return <FinalizationScreen data={guestData} updateData={updateGuestData} />;
+        return <FinalizationScreen data={guestData} updateData={updateGuestData} onNext={goToNextStep} onEdit={goToStep} />;
+      case 'thank-you':
+        return <ThankYouScreen />;
       default:
         return <WelcomeScreen onNext={goToNextStep} updateData={updateGuestData} />;
     }
@@ -156,7 +166,7 @@ export const CheckInFlow = () => {
 
   return (
     <div className="min-h-screen bg-muted">
-      {currentStep !== 'welcome' && <CheckInProgress currentStep={currentStep} />}
+      {currentStep !== 'welcome' && currentStep !== 'thank-you' && <CheckInProgress currentStep={currentStep} />}
       {renderStep()}
     </div>
   );

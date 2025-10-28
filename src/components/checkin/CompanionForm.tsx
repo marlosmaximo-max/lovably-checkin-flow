@@ -306,50 +306,77 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
     <div className="min-h-screen py-8 px-4">
       <div className="container max-w-2xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-foreground">Capturar Selfie</h1>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
+            <Camera className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Tire a Selfie do Acompanhante</h1>
+          <p className="text-muted-foreground">
+            Centralize o rosto do acompanhante na moldura e tire a foto
+          </p>
         </div>
 
-        <Card className="p-6 space-y-6">
-          {!selfie ? (
-            <div className="space-y-4">
-              <div className="relative aspect-[3/4] max-w-sm mx-auto bg-muted rounded-2xl border-4 border-primary/20 flex items-center justify-center">
-                <Camera className="w-16 h-16 text-muted-foreground/30" />
+        <Card className="p-6">
+          <div className="space-y-6">
+            {!selfie ? (
+              <div className="space-y-4">
+                <div className="relative aspect-[3/4] max-w-sm mx-auto bg-muted rounded-2xl overflow-hidden border-4 border-primary/20">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-64 h-80 border-4 border-dashed border-primary/40 rounded-full"></div>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Camera className="w-16 h-16 text-muted-foreground/30" />
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="user"
+                    className="hidden"
+                    id="selfie-input"
+                    onChange={(e) => handleFileChange(e, 'selfie')}
+                  />
+                  <Button
+                    size="lg"
+                    className="w-full max-w-xs"
+                    onClick={() => document.getElementById('selfie-input')?.click()}
+                  >
+                    <Camera className="mr-2 h-5 w-5" />
+                    Capturar Foto
+                  </Button>
+                </div>
               </div>
-              <label className="block">
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="user"
-                  className="hidden"
-                  onChange={(e) => handleFileChange(e, 'selfie')}
-                />
-                <Button className="w-full" onClick={(e) => {
-                  e.preventDefault();
-                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                  input?.click();
-                }}>
-                  <Camera className="mr-2 h-5 w-5" />
-                  Capturar Foto
-                </Button>
-              </label>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="relative aspect-[3/4] max-w-sm mx-auto rounded-2xl overflow-hidden border-4 border-success">
-                <img src={selfie} alt="Selfie" className="w-full h-full object-cover" />
+            ) : (
+              <div className="space-y-4">
+                <div className="relative aspect-[3/4] max-w-sm mx-auto rounded-2xl overflow-hidden border-4 border-success">
+                  <img
+                    src={selfie}
+                    alt="Selfie do acompanhante"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setSelfie('')}
+                  >
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Tirar Novamente
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={handleSave}
+                  >
+                    Salvar Acompanhante
+                    <Check className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setSelfie('')}>
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Tirar Novamente
-                </Button>
-                <Button className="flex-1" onClick={handleSave}>
-                  Salvar Acompanhante
-                  <Check className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </Card>
       </div>
     </div>

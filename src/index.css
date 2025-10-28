@@ -9,33 +9,33 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Gonzaga Brand Colors */
-    --background: 0 0% 100%;
-    --foreground: 246 75% 11%;
+    --background: 45 29% 91%;  /* #EFEFE4 - Gonzaga Off-White */
+    --foreground: 242 87% 13%;  /* #080732 - Gonzaga Dark Blue */
     
     /* Gonzaga Orange - Primary Brand Color */
-    --primary: 16 100% 55%;
+    --primary: 16 100% 55%;  /* #FF5518 - Gonzaga Orange */
     --primary-foreground: 0 0% 100%;
     --primary-glow: 16 100% 65%;
     
     /* Navy Blue - Secondary */
-    --secondary: 242 75% 11%;
+    --secondary: 242 87% 13%;  /* #080732 - Gonzaga Dark Blue */
     --secondary-foreground: 0 0% 100%;
     
     /* Light Blue Accent */
-    --accent: 199 100% 75%;
-    --accent-foreground: 246 75% 11%;
+    --accent: 16 100% 55%;  /* Using Gonzaga Orange for accent */
+    --accent-foreground: 0 0% 100%;
     
     /* Muted/Neutral - Off-white */
-    --muted: 60 18% 92%;
-    --muted-foreground: 246 20% 40%;
+    --muted: 45 29% 88%;
+    --muted-foreground: 242 30% 40%;
     
     /* Card */
     --card: 0 0% 100%;
-    --card-foreground: 246 75% 11%;
+    --card-foreground: 242 87% 13%;
     
     /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 246 75% 11%;
+    --popover-foreground: 242 87% 13%;
     
     /* Destructive */
     --destructive: 0 84% 60%;
@@ -46,17 +46,17 @@ All colors MUST be HSL.
     --success-foreground: 0 0% 100%;
     
     /* Border & Input */
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
+    --border: 45 29% 80%;
+    --input: 45 29% 80%;
     --ring: 16 100% 55%;
     
     /* Radius */
     --radius: 0.75rem;
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(246 75% 11% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(246 75% 11% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(246 75% 11% / 0.1);
+    --shadow-sm: 0 1px 2px 0 hsl(242 87% 13% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(242 87% 13% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(242 87% 13% / 0.1);
     --shadow-glow: 0 0 20px hsl(16 100% 55% / 0.2);
     
     /* Transitions */
@@ -81,27 +81,28 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 246 75% 11%;
-    --foreground: 0 0% 98%;
+    /* Gonzaga Dark Mode */
+    --background: 242 87% 13%;  /* #080732 - Gonzaga Dark Blue */
+    --foreground: 45 29% 91%;  /* #EFEFE4 - Gonzaga Off-White */
     
-    --primary: 16 100% 55%;
+    --primary: 16 100% 55%;  /* #FF5518 - Gonzaga Orange */
     --primary-foreground: 0 0% 100%;
     --primary-glow: 16 100% 65%;
     
-    --secondary: 242 80% 8%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 242 50% 25%;
+    --secondary-foreground: 45 29% 91%;
     
-    --accent: 199 100% 65%;
+    --accent: 16 100% 55%;  /* Using Gonzaga Orange for accent */
     --accent-foreground: 0 0% 100%;
     
-    --muted: 246 30% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 242 50% 22%;
+    --muted-foreground: 45 20% 70%;
     
-    --card: 246 50% 15%;
-    --card-foreground: 0 0% 98%;
+    --card: 242 70% 18%;
+    --card-foreground: 45 29% 91%;
     
-    --popover: 246 50% 15%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 242 70% 18%;
+    --popover-foreground: 45 29% 91%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -109,8 +110,8 @@ All colors MUST be HSL.
     --success: 142 52% 42%;
     --success-foreground: 0 0% 100%;
     
-    --border: 246 30% 25%;
-    --input: 246 30% 25%;
+    --border: 242 50% 25%;
+    --input: 242 50% 25%;
     --ring: 16 100% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
