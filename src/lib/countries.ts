@@ -1,0 +1,52 @@
+export interface Country {
+  code: string;
+  name: string;
+  flag: string;
+  dialCode: string;
+}
+
+export const countries: Country[] = [
+  { code: 'BR', name: 'Brasil', flag: '🇧🇷', dialCode: '+55' },
+  { code: 'US', name: 'Estados Unidos', flag: '🇺🇸', dialCode: '+1' },
+  { code: 'AR', name: 'Argentina', flag: '🇦🇷', dialCode: '+54' },
+  { code: 'AU', name: 'Austrália', flag: '🇦🇺', dialCode: '+61' },
+  { code: 'AT', name: 'Áustria', flag: '🇦🇹', dialCode: '+43' },
+  { code: 'BE', name: 'Bélgica', flag: '🇧🇪', dialCode: '+32' },
+  { code: 'BO', name: 'Bolívia', flag: '🇧🇴', dialCode: '+591' },
+  { code: 'CA', name: 'Canadá', flag: '🇨🇦', dialCode: '+1' },
+  { code: 'CL', name: 'Chile', flag: '🇨🇱', dialCode: '+56' },
+  { code: 'CN', name: 'China', flag: '🇨🇳', dialCode: '+86' },
+  { code: 'CO', name: 'Colômbia', flag: '🇨🇴', dialCode: '+57' },
+  { code: 'CR', name: 'Costa Rica', flag: '🇨🇷', dialCode: '+506' },
+  { code: 'CU', name: 'Cuba', flag: '🇨🇺', dialCode: '+53' },
+  { code: 'DK', name: 'Dinamarca', flag: '🇩🇰', dialCode: '+45' },
+  { code: 'EC', name: 'Equador', flag: '🇪🇨', dialCode: '+593' },
+  { code: 'EG', name: 'Egito', flag: '🇪🇬', dialCode: '+20' },
+  { code: 'ES', name: 'Espanha', flag: '🇪🇸', dialCode: '+34' },
+  { code: 'FR', name: 'França', flag: '🇫🇷', dialCode: '+33' },
+  { code: 'DE', name: 'Alemanha', flag: '🇩🇪', dialCode: '+49' },
+  { code: 'GR', name: 'Grécia', flag: '🇬🇷', dialCode: '+30' },
+  { code: 'IN', name: 'Índia', flag: '🇮🇳', dialCode: '+91' },
+  { code: 'IE', name: 'Irlanda', flag: '🇮🇪', dialCode: '+353' },
+  { code: 'IL', name: 'Israel', flag: '🇮🇱', dialCode: '+972' },
+  { code: 'IT', name: 'Itália', flag: '🇮🇹', dialCode: '+39' },
+  { code: 'JP', name: 'Japão', flag: '🇯🇵', dialCode: '+81' },
+  { code: 'MX', name: 'México', flag: '🇲🇽', dialCode: '+52' },
+  { code: 'NL', name: 'Holanda', flag: '🇳🇱', dialCode: '+31' },
+  { code: 'NZ', name: 'Nova Zelândia', flag: '🇳🇿', dialCode: '+64' },
+  { code: 'NO', name: 'Noruega', flag: '🇳🇴', dialCode: '+47' },
+  { code: 'PA', name: 'Panamá', flag: '🇵🇦', dialCode: '+507' },
+  { code: 'PY', name: 'Paraguai', flag: '🇵🇾', dialCode: '+595' },
+  { code: 'PE', name: 'Peru', flag: '🇵🇪', dialCode: '+51' },
+  { code: 'PL', name: 'Polônia', flag: '🇵🇱', dialCode: '+48' },
+  { code: 'PT', name: 'Portugal', flag: '🇵🇹', dialCode: '+351' },
+  { code: 'GB', name: 'Reino Unido', flag: '🇬🇧', dialCode: '+44' },
+  { code: 'RU', name: 'Rússia', flag: '🇷🇺', dialCode: '+7' },
+  { code: 'ZA', name: 'África do Sul', flag: '🇿🇦', dialCode: '+27' },
+  { code: 'KR', name: 'Coreia do Sul', flag: '🇰🇷', dialCode: '+82' },
+  { code: 'SE', name: 'Suécia', flag: '🇸🇪', dialCode: '+46' },
+  { code: 'CH', name: 'Suíça', flag: '🇨🇭', dialCode: '+41' },
+  { code: 'TR', name: 'Turquia', flag: '🇹🇷', dialCode: '+90' },
+  { code: 'UY', name: 'Uruguai', flag: '🇺🇾', dialCode: '+598' },
+  { code: 'VE', name: 'Venezuela', flag: '🇻🇪', dialCode: '+58' },
+];

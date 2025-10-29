@@ -16,7 +16,7 @@ export const ThankYouScreen = () => {
           </h1>
           
           <p className="text-lg text-muted-foreground max-w-lg mx-auto">
-            Obrigado por completar seu check-in. Em breve você receberá um e-mail com todas as instruções de acesso e informações importantes sobre sua estadia.
+            Obrigado por completar seu check-in. Em breve você receberá as demais informações via WhatsApp ou pela plataforma que fez a reserva.
           </p>
         </div>
 
@@ -32,10 +32,10 @@ export const ThankYouScreen = () => {
             
             <div className="space-y-3 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">
-                📧 Verifique seu e-mail
+                📱 Fique atento
               </p>
               <p>
-                Enviamos um e-mail de confirmação com todas as informações necessárias para sua chegada.
+                Você receberá em breve todas as informações necessárias para sua chegada.
               </p>
               
               <div className="pt-4 border-t border-border mt-6">
@@ -43,7 +43,7 @@ export const ThankYouScreen = () => {
                   Dúvidas ou precisa de ajuda?
                 </p>
                 <p>
-                  Entre em contato conosco através dos canais de atendimento disponíveis no seu e-mail de confirmação.
+                  Entre em contato conosco através dos canais de atendimento disponíveis.
                 </p>
               </div>
             </div>

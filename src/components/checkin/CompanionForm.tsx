@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Upload, Camera, RotateCcw, Check, AlertCircle } from "lucide-react";
 import { CompanionData } from "../CheckInFlow";
 import { toast } from "sonner";
+import { formatCPF, validateCPF } from "@/lib/cpf-validator";
+import { countries } from "@/lib/countries";
 
 interface CompanionFormProps {
   onSave: (companion: CompanionData) => void;
@@ -26,10 +28,27 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
     birthDate: '',
     phone: '',
     email: '',
+    countryCode: 'BR',
   });
   const [documentFront, setDocumentFront] = useState<string>('');
   const [documentBack, setDocumentBack] = useState<string>('');
   const [selfie, setSelfie] = useState<string>('');
+  const [cpfError, setCpfError] = useState('');
+
+  const handleCPFChange = (value: string) => {
+    const formatted = formatCPF(value);
+    setFormData({ ...formData, documentNumber: formatted });
+    
+    if (formatted.replace(/\D/g, '').length === 11) {
+      if (!validateCPF(formatted)) {
+        setCpfError('CPF inválido');
+      } else {
+        setCpfError('');
+      }
+    } else {
+      setCpfError('');
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'front' | 'back' | 'selfie') => {
     const file = e.target.files?.[0];
@@ -50,6 +69,12 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
     
     if (formData.email === mainGuestEmail) {
       toast.error("O e-mail do acompanhante não pode ser igual ao do hóspede principal");
+      return;
+    }
+    
+    // Validação de CPF
+    if (formData.documentType === 'cpf' && !validateCPF(formData.documentNumber)) {
+      toast.error('Por favor, insira um CPF válido');
       return;
     }
     
@@ -100,9 +125,21 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
                 <Label>Número do Documento</Label>
                 <Input
                   value={formData.documentNumber}
-                  onChange={(e) => setFormData({ ...formData, documentNumber: e.target.value })}
+                  onChange={(e) => {
+                    if (formData.documentType === 'cpf') {
+                      handleCPFChange(e.target.value);
+                    } else {
+                      setFormData({ ...formData, documentNumber: e.target.value });
+                    }
+                  }}
+                  placeholder={formData.documentType === 'cpf' ? '000.000.000-00' : 'AB123456'}
+                  maxLength={formData.documentType === 'cpf' ? 14 : undefined}
                   required
+                  className={cpfError ? 'border-destructive' : ''}
                 />
+                {cpfError && (
+                  <p className="text-sm text-destructive">{cpfError}</p>
+                )}
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -136,12 +173,43 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
 
               <div className="space-y-2">
                 <Label>Telefone</Label>
-                <Input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  required
-                />
+                <div className="flex gap-2">
+                  <Select
+                    value={formData.countryCode}
+                    onValueChange={(value) => {
+                      const country = countries.find(c => c.code === value);
+                      setFormData({ 
+                        ...formData, 
+                        countryCode: value,
+                        phone: country?.dialCode || ''
+                      });
+                    }}
+                  >
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue>
+                        {countries.find(c => c.code === formData.countryCode)?.flag} {countries.find(c => c.code === formData.countryCode)?.dialCode}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country.code} value={country.code}>
+                          {country.flag} {country.dialCode} {country.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="tel"
+                    value={formData.phone.replace(countries.find(c => c.code === formData.countryCode)?.dialCode || '', '')}
+                    onChange={(e) => {
+                      const dialCode = countries.find(c => c.code === formData.countryCode)?.dialCode || '';
+                      setFormData({ ...formData, phone: dialCode + e.target.value.replace(/\D/g, '') });
+                    }}
+                    placeholder="11 98765-4321"
+                    className="flex-1"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -321,10 +389,27 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
               <div className="space-y-4">
                 <div className="relative aspect-[3/4] max-w-sm mx-auto bg-muted rounded-2xl overflow-hidden border-4 border-primary/20">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-64 h-80 border-4 border-dashed border-primary/40 rounded-full"></div>
+                    <div className="w-48 h-64 border-4 border-dashed border-primary rounded-[50%]"></div>
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Camera className="w-16 h-16 text-muted-foreground/30" />
+                  </div>
+                </div>
+
+                <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 max-w-sm mx-auto">
+                  <div className="text-sm space-y-2">
+                    <div className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
+                      <p className="text-accent-foreground">Expressão natural e rosto visível</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
+                      <p className="text-accent-foreground">Boa iluminação</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                      <p className="text-accent-foreground">Sem bonés, óculos escuros ou filtros</p>
+                    </div>
                   </div>
                 </div>
 

@@ -6,6 +6,9 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, ArrowRight, User } from "lucide-react";
 import { GuestData } from "../CheckInFlow";
+import { formatCPF, validateCPF, calculateAge } from "@/lib/cpf-validator";
+import { countries } from "@/lib/countries";
+import { toast } from "sonner";
 
 interface PersonalInfoScreenProps {
   onNext: () => void;
@@ -23,11 +26,44 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
     birthDate: data.birthDate || '',
     phone: data.phone || '',
     email: data.email || '',
-    country: data.country || '',
+    country: data.country || 'BR',
+    countryCode: data.countryCode || 'BR',
   });
+  const [cpfError, setCpfError] = useState('');
+
+  const handleCPFChange = (value: string) => {
+    const formatted = formatCPF(value);
+    setFormData({ ...formData, documentNumber: formatted });
+    
+    if (formatted.replace(/\D/g, '').length === 11) {
+      if (!validateCPF(formatted)) {
+        setCpfError('CPF inválido');
+      } else {
+        setCpfError('');
+      }
+    } else {
+      setCpfError('');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validação de CPF
+    if (formData.documentType === 'cpf' && !validateCPF(formData.documentNumber)) {
+      toast.error('Por favor, insira um CPF válido');
+      return;
+    }
+    
+    // Validação de idade mínima de 18 anos
+    if (formData.birthDate) {
+      const age = calculateAge(formData.birthDate);
+      if (age < 18) {
+        toast.error('O hóspede principal deve ter 18 anos ou mais');
+        return;
+      }
+    }
+    
     updateData(formData);
     onNext();
   };
@@ -70,10 +106,21 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
               <Input
                 id="documentNumber"
                 value={formData.documentNumber}
-                onChange={(e) => setFormData({ ...formData, documentNumber: e.target.value })}
+                onChange={(e) => {
+                  if (formData.documentType === 'cpf') {
+                    handleCPFChange(e.target.value);
+                  } else {
+                    setFormData({ ...formData, documentNumber: e.target.value });
+                  }
+                }}
                 placeholder={formData.documentType === 'cpf' ? '000.000.000-00' : 'AB123456'}
+                maxLength={formData.documentType === 'cpf' ? 14 : undefined}
                 required
+                className={cpfError ? 'border-destructive' : ''}
               />
+              {cpfError && (
+                <p className="text-sm text-destructive">{cpfError}</p>
+              )}
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -110,15 +157,45 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Telefone (com DDI)</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+55 11 98765-4321"
-                required
-              />
+              <Label htmlFor="phone">Telefone</Label>
+              <div className="flex gap-2">
+                <Select
+                  value={formData.countryCode}
+                  onValueChange={(value) => {
+                    const country = countries.find(c => c.code === value);
+                    setFormData({ 
+                      ...formData, 
+                      countryCode: value,
+                      phone: country?.dialCode || ''
+                    });
+                  }}
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue>
+                      {countries.find(c => c.code === formData.countryCode)?.flag} {countries.find(c => c.code === formData.countryCode)?.dialCode}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.code} value={country.code}>
+                        {country.flag} {country.dialCode} {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone.replace(countries.find(c => c.code === formData.countryCode)?.dialCode || '', '')}
+                  onChange={(e) => {
+                    const dialCode = countries.find(c => c.code === formData.countryCode)?.dialCode || '';
+                    setFormData({ ...formData, phone: dialCode + e.target.value.replace(/\D/g, '') });
+                  }}
+                  placeholder="11 98765-4321"
+                  className="flex-1"
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -134,12 +211,23 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
 
             <div className="space-y-2">
               <Label htmlFor="country">País onde reside</Label>
-              <Input
-                id="country"
+              <Select
                 value={formData.country}
-                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                required
-              />
+                onValueChange={(value) => setFormData({ ...formData, country: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue>
+                    {countries.find(c => c.code === formData.country)?.flag} {countries.find(c => c.code === formData.country)?.name}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                      {country.flag} {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex gap-3 pt-4">

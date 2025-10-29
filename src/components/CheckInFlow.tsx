@@ -39,6 +39,7 @@ export interface GuestData {
   phone?: string;
   email?: string;
   country?: string;
+  countryCode?: string;
   zipCode?: string;
   address?: string;
   addressNumber?: string;
@@ -68,6 +69,7 @@ export interface CompanionData {
   birthDate: string;
   phone: string;
   email: string;
+  countryCode?: string;
   documentFront?: string;
   documentBack?: string;
   selfie?: string;

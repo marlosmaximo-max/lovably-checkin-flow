@@ -3,8 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, Loader2 } from "lucide-react";
 import { GuestData } from "../CheckInFlow";
+import { formatCEP } from "@/lib/cpf-validator";
+import { fetchCEP } from "@/lib/cep-service";
+import { toast } from "sonner";
 
 interface AddressScreenProps {
   onNext: () => void;
@@ -23,6 +26,33 @@ export const AddressScreen = ({ onNext, onBack, data, updateData }: AddressScree
     city: data.city || '',
     state: data.state || '',
   });
+  const [loadingCEP, setLoadingCEP] = useState(false);
+
+  const handleCEPChange = async (value: string) => {
+    const formatted = formatCEP(value);
+    setFormData({ ...formData, zipCode: formatted });
+    
+    const cleanCEP = formatted.replace(/\D/g, '');
+    if (cleanCEP.length === 8) {
+      setLoadingCEP(true);
+      const cepData = await fetchCEP(cleanCEP);
+      setLoadingCEP(false);
+      
+      if (cepData) {
+        setFormData({
+          ...formData,
+          zipCode: formatted,
+          address: cepData.logradouro,
+          neighborhood: cepData.bairro,
+          city: cepData.localidade,
+          state: cepData.uf,
+        });
+        toast.success('CEP encontrado!');
+      } else {
+        toast.error('CEP não encontrado');
+      }
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,13 +77,19 @@ export const AddressScreen = ({ onNext, onBack, data, updateData }: AddressScree
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="zipCode">CEP</Label>
-              <Input
-                id="zipCode"
-                value={formData.zipCode}
-                onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                placeholder="00000-000"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="zipCode"
+                  value={formData.zipCode}
+                  onChange={(e) => handleCEPChange(e.target.value)}
+                  placeholder="00000-000"
+                  maxLength={9}
+                  required
+                />
+                {loadingCEP && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4">
