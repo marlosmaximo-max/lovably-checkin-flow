@@ -9,7 +9,6 @@ import { CompanionData } from "../CheckInFlow";
 import { toast } from "sonner";
 import { formatCPF, validateCPF } from "@/lib/cpf-validator";
 import { countries } from "@/lib/countries";
-import { formatPhoneBrazil, formatPhoneInternational, getDialCodeFromPhone } from "@/lib/phone-formatter";
 
 interface CompanionFormProps {
   onSave: (companion: CompanionData) => void;
@@ -35,7 +34,6 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
   const [documentBack, setDocumentBack] = useState<string>('');
   const [selfie, setSelfie] = useState<string>('');
   const [cpfError, setCpfError] = useState('');
-  const [emailError, setEmailError] = useState('');
 
   const handleCPFChange = (value: string) => {
     const formatted = formatCPF(value);
@@ -49,34 +47,6 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
       }
     } else {
       setCpfError('');
-    }
-  };
-
-  const handlePhoneChange = (value: string) => {
-    if (formData.countryCode === 'BR') {
-      const formatted = formatPhoneBrazil(value);
-      setFormData({ ...formData, phone: formatted });
-    } else {
-      const formatted = formatPhoneInternational(value);
-      setFormData({ ...formData, phone: formatted });
-    }
-    
-    const dialCode = getDialCodeFromPhone(value);
-    if (dialCode) {
-      const matchedCountry = countries.find(c => c.dialCode === dialCode);
-      if (matchedCountry && matchedCountry.code !== formData.countryCode) {
-        setFormData({ ...formData, countryCode: matchedCountry.code, phone: value });
-      }
-    }
-  };
-
-  const handleEmailChange = (value: string) => {
-    setFormData({ ...formData, email: value });
-    
-    if (value && !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setEmailError('E-mail inválido');
-    } else {
-      setEmailError('');
     }
   };
 
@@ -230,9 +200,12 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
                   </Select>
                   <Input
                     type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handlePhoneChange(e.target.value)}
-                    placeholder={formData.countryCode === 'BR' ? "(11) 98765-4321" : "Phone number"}
+                    value={formData.phone.replace(countries.find(c => c.code === formData.countryCode)?.dialCode || '', '')}
+                    onChange={(e) => {
+                      const dialCode = countries.find(c => c.code === formData.countryCode)?.dialCode || '';
+                      setFormData({ ...formData, phone: dialCode + e.target.value.replace(/\D/g, '') });
+                    }}
+                    placeholder="11 98765-4321"
                     className="flex-1"
                     required
                   />
@@ -244,13 +217,9 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
                 <Input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleEmailChange(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className={emailError ? 'border-destructive' : ''}
                 />
-                {emailError && (
-                  <p className="text-sm text-destructive">{emailError}</p>
-                )}
               </div>
 
               <div className="flex gap-3 pt-4">
@@ -279,10 +248,10 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
           </div>
 
           <Card className="p-6 space-y-6">
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+            <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-foreground space-y-1">
+                <AlertCircle className="w-5 h-5 text-accent-foreground flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-accent-foreground space-y-1">
                   <p className="font-semibold">Instruções:</p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
                     <li>Fotografe ambos os lados do documento</li>
@@ -328,43 +297,11 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.capture = 'environment';
-                        input.onchange = (e) => handleFileChange(e as any, 'front');
-                        input.click();
-                      }}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Camera className="w-8 h-8" />
-                        <span className="font-medium">Tirar Foto</span>
-                      </div>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.onchange = (e) => handleFileChange(e as any, 'front');
-                        input.click();
-                      }}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Upload className="w-8 h-8" />
-                        <span className="font-medium">Selecionar Arquivo</span>
-                      </div>
-                    </Button>
-                  </div>
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50">
+                    <Upload className="w-10 h-10 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">Clique para enviar</span>
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'front')} />
+                  </label>
                 )}
               </div>
 
@@ -384,43 +321,11 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.capture = 'environment';
-                        input.onchange = (e) => handleFileChange(e as any, 'back');
-                        input.click();
-                      }}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Camera className="w-8 h-8" />
-                        <span className="font-medium">Tirar Foto</span>
-                      </div>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.onchange = (e) => handleFileChange(e as any, 'back');
-                        input.click();
-                      }}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Upload className="w-8 h-8" />
-                        <span className="font-medium">Selecionar Arquivo</span>
-                      </div>
-                    </Button>
-                  </div>
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50">
+                    <Upload className="w-10 h-10 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">Clique para enviar</span>
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'back')} />
+                  </label>
                 )}
               </div>
             </div>
@@ -448,8 +353,8 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
           </div>
 
           <Card className="p-6 space-y-6">
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-              <p className="text-sm text-foreground text-center">
+            <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
+              <p className="text-sm text-accent-foreground text-center">
                 <Check className="w-4 h-4 inline mr-2" />
                 Expressão natural, rosto visível, boa iluminação
               </p>
@@ -491,53 +396,39 @@ export const CompanionForm = ({ onSave, onCancel, mainGuestEmail }: CompanionFor
                   </div>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 max-w-sm mx-auto">
+                <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 max-w-sm mx-auto">
                   <div className="text-sm space-y-2">
                     <div className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
-                      <p className="text-foreground">Expressão natural e rosto visível</p>
+                      <p className="text-accent-foreground">Expressão natural e rosto visível</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
-                      <p className="text-foreground">Boa iluminação</p>
+                      <p className="text-accent-foreground">Boa iluminação</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-                      <p className="text-foreground">Sem bonés, óculos escuros ou filtros</p>
+                      <p className="text-accent-foreground">Sem bonés, óculos escuros ou filtros</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                <div className="text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="user"
+                    className="hidden"
+                    id="selfie-input"
+                    onChange={(e) => handleFileChange(e, 'selfie')}
+                  />
                   <Button
                     size="lg"
-                    className="w-full"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.capture = 'user';
-                      input.onchange = (e) => handleFileChange(e as any, 'selfie');
-                      input.click();
-                    }}
+                    className="w-full max-w-xs"
+                    onClick={() => document.getElementById('selfie-input')?.click()}
                   >
                     <Camera className="mr-2 h-5 w-5" />
-                    Tirar Selfie
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.onchange = (e) => handleFileChange(e as any, 'selfie');
-                      input.click();
-                    }}
-                  >
-                    <Upload className="mr-2 h-5 w-5" />
-                    Selecionar Arquivo
+                    Capturar Foto
                   </Button>
                 </div>
               </div>

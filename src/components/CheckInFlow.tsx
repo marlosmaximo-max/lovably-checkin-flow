@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { WelcomeScreen } from "./checkin/WelcomeScreen";
 import { PersonalInfoScreen } from "./checkin/PersonalInfoScreen";
 import { AddressScreen } from "./checkin/AddressScreen";
@@ -76,38 +76,8 @@ export interface CompanionData {
 }
 
 export const CheckInFlow = () => {
-  const [currentStep, setCurrentStep] = useState<CheckInStep>(() => {
-    const saved = localStorage.getItem('checkin-step');
-    return (saved as CheckInStep) || 'welcome';
-  });
-  
-  const [guestData, setGuestData] = useState<GuestData>(() => {
-    const saved = localStorage.getItem('checkin-progress');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return { companions: [] };
-      }
-    }
-    return { companions: [] };
-  });
-
-  // Auto-save progress to localStorage
-  useEffect(() => {
-    if (currentStep !== 'welcome' && currentStep !== 'thank-you') {
-      localStorage.setItem('checkin-progress', JSON.stringify(guestData));
-      localStorage.setItem('checkin-step', currentStep);
-    }
-  }, [guestData, currentStep]);
-
-  // Clear progress on completion
-  useEffect(() => {
-    if (currentStep === 'thank-you') {
-      localStorage.removeItem('checkin-progress');
-      localStorage.removeItem('checkin-step');
-    }
-  }, [currentStep]);
+  const [currentStep, setCurrentStep] = useState<CheckInStep>('welcome');
+  const [guestData, setGuestData] = useState<GuestData>({});
 
   const updateGuestData = (data: Partial<GuestData>) => {
     setGuestData(prev => ({ ...prev, ...data }));

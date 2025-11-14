@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Upload, FileText, AlertCircle, Camera } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, FileText, AlertCircle } from "lucide-react";
 import { GuestData } from "../CheckInFlow";
 
 interface DocumentUploadScreenProps {
@@ -14,10 +14,6 @@ interface DocumentUploadScreenProps {
 export const DocumentUploadScreen = ({ onNext, onBack, data, updateData }: DocumentUploadScreenProps) => {
   const [frontImage, setFrontImage] = useState<string | null>(data.documentFront || null);
   const [backImage, setBackImage] = useState<string | null>(data.documentBack || null);
-  const frontFileInputRef = useRef<HTMLInputElement>(null);
-  const frontCameraInputRef = useRef<HTMLInputElement>(null);
-  const backFileInputRef = useRef<HTMLInputElement>(null);
-  const backCameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
     const file = e.target.files?.[0];
@@ -58,10 +54,10 @@ export const DocumentUploadScreen = ({ onNext, onBack, data, updateData }: Docum
 
         <Card className="p-6">
           <div className="space-y-6">
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
+            <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 space-y-2">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-foreground space-y-1">
+                <AlertCircle className="w-5 h-5 text-accent-foreground flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-accent-foreground space-y-1">
                   <p className="font-semibold">Instruções importantes:</p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
                     <li>Use o documento original (sem capa plástica)</li>
@@ -100,45 +96,16 @@ export const DocumentUploadScreen = ({ onNext, onBack, data, updateData }: Docum
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    <Upload className="w-10 h-10 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">Clique para enviar</span>
                     <input
-                      ref={frontFileInputRef}
                       type="file"
-                      accept="image/*"
                       className="hidden"
+                      accept="image/*"
                       onChange={(e) => handleFileChange(e, 'front')}
                     />
-                    <input
-                      ref={frontCameraInputRef}
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, 'front')}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => frontCameraInputRef.current?.click()}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Camera className="w-8 h-8" />
-                        <span className="font-medium">Tirar Foto</span>
-                      </div>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => frontFileInputRef.current?.click()}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Upload className="w-8 h-8" />
-                        <span className="font-medium">Selecionar Arquivo</span>
-                      </div>
-                    </Button>
-                  </div>
+                  </label>
                 )}
               </div>
 
@@ -167,45 +134,16 @@ export const DocumentUploadScreen = ({ onNext, onBack, data, updateData }: Docum
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    <Upload className="w-10 h-10 text-muted-foreground mb-2" />
+                    <span className="text-sm text-muted-foreground">Clique para enviar</span>
                     <input
-                      ref={backFileInputRef}
                       type="file"
-                      accept="image/*"
                       className="hidden"
+                      accept="image/*"
                       onChange={(e) => handleFileChange(e, 'back')}
                     />
-                    <input
-                      ref={backCameraInputRef}
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, 'back')}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => backCameraInputRef.current?.click()}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Camera className="w-8 h-8" />
-                        <span className="font-medium">Tirar Foto</span>
-                      </div>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-24 border-2 border-dashed hover:border-primary hover:bg-primary/5"
-                      onClick={() => backFileInputRef.current?.click()}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <Upload className="w-8 h-8" />
-                        <span className="font-medium">Selecionar Arquivo</span>
-                      </div>
-                    </Button>
-                  </div>
+                  </label>
                 )}
               </div>
             </div>

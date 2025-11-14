@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Camera, RotateCcw, Upload } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, RotateCcw } from "lucide-react";
 import { GuestData } from "../CheckInFlow";
 
 interface SelfieCaptureScreenProps {
@@ -13,7 +13,6 @@ interface SelfieCaptureScreenProps {
 
 export const SelfieCaptureScreen = ({ onNext, onBack, data, updateData }: SelfieCaptureScreenProps) => {
   const [capturedImage, setCapturedImage] = useState<string | null>(data.selfie || null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,38 +68,22 @@ export const SelfieCaptureScreen = ({ onNext, onBack, data, updateData }: Selfie
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                <div className="text-center">
                   <input
-                    ref={cameraInputRef}
+                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     capture="user"
                     className="hidden"
                     onChange={handleFileChange}
                   />
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
                   <Button
                     size="lg"
-                    className="w-full"
-                    onClick={() => cameraInputRef.current?.click()}
-                  >
-                    <Camera className="mr-2 h-5 w-5" />
-                    Tirar Selfie
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full"
+                    className="w-full max-w-xs"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <Upload className="mr-2 h-5 w-5" />
-                    Selecionar Arquivo
+                    <Camera className="mr-2 h-5 w-5" />
+                    Capturar Foto
                   </Button>
                 </div>
               </div>

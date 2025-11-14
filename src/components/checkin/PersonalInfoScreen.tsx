@@ -8,7 +8,6 @@ import { ArrowLeft, ArrowRight, User } from "lucide-react";
 import { GuestData } from "../CheckInFlow";
 import { formatCPF, validateCPF, calculateAge } from "@/lib/cpf-validator";
 import { countries } from "@/lib/countries";
-import { formatPhoneBrazil, formatPhoneInternational, getDialCodeFromPhone } from "@/lib/phone-formatter";
 import { toast } from "sonner";
 
 interface PersonalInfoScreenProps {
@@ -31,7 +30,6 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
     countryCode: data.countryCode || 'BR',
   });
   const [cpfError, setCpfError] = useState('');
-  const [emailError, setEmailError] = useState('');
 
   const handleCPFChange = (value: string) => {
     const formatted = formatCPF(value);
@@ -45,35 +43,6 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
       }
     } else {
       setCpfError('');
-    }
-  };
-
-  const handlePhoneChange = (value: string) => {
-    if (formData.countryCode === 'BR') {
-      const formatted = formatPhoneBrazil(value);
-      setFormData({ ...formData, phone: formatted });
-    } else {
-      const formatted = formatPhoneInternational(value);
-      setFormData({ ...formData, phone: formatted });
-    }
-    
-    // Sync country based on dial code
-    const dialCode = getDialCodeFromPhone(value);
-    if (dialCode) {
-      const matchedCountry = countries.find(c => c.dialCode === dialCode);
-      if (matchedCountry && matchedCountry.code !== formData.countryCode) {
-        setFormData({ ...formData, countryCode: matchedCountry.code, phone: value });
-      }
-    }
-  };
-
-  const handleEmailChange = (value: string) => {
-    setFormData({ ...formData, email: value });
-    
-    if (value && !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setEmailError('E-mail inválido');
-    } else {
-      setEmailError('');
     }
   };
 
@@ -217,9 +186,12 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
                 <Input
                   id="phone"
                   type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  placeholder={formData.countryCode === 'BR' ? "(11) 98765-4321" : "Phone number"}
+                  value={formData.phone.replace(countries.find(c => c.code === formData.countryCode)?.dialCode || '', '')}
+                  onChange={(e) => {
+                    const dialCode = countries.find(c => c.code === formData.countryCode)?.dialCode || '';
+                    setFormData({ ...formData, phone: dialCode + e.target.value.replace(/\D/g, '') });
+                  }}
+                  placeholder="11 98765-4321"
                   className="flex-1"
                   required
                 />
@@ -232,13 +204,9 @@ export const PersonalInfoScreen = ({ onNext, onBack, data, updateData }: Persona
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleEmailChange(e.target.value)}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
-                className={emailError ? 'border-destructive' : ''}
               />
-              {emailError && (
-                <p className="text-sm text-destructive">{emailError}</p>
-              )}
             </div>
 
             <div className="space-y-2">
